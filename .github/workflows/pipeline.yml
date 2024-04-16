@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag website:dev
       # source: https://aws.amazon.com/pt/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -22,6 +20,10 @@ jobs:
         role-to-assume: arn:aws:iam::869076952864:role/GitHubAction-AssumeRoleWithAction
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
         aws-region: sa-east-1
+    - name: Build and push docker image
+      run: |
+        docker build . --file Dockerfile --tag public.ecr.aws/c2u3p1i2/website:dev
+        docker push public.ecr.aws/c2u3p1i2/website:dev
     - name: Login to Amazon ECR Private
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
